@@ -1,0 +1,100 @@
+body{
+	background-color: #EFF0F0;
+	font-family: Helvetica;
+}
+h1{
+	
+	margin-left: 500px;
+	color:#0B1230;
+}
+h3{
+	margin-left: 100px;
+	margin-top: 50px;
+  font-family: "Century Gothic";
+}
+
+#cabecera{
+	 background-image: url('../imagenes/p3.jpg'  );
+
+	width: 1350px;
+	height:300px; 
+
+}
+#linea{
+	background-color: #0B1230;
+	width: 1350px;
+	height: 10px;
+	margin-top: 5px;
+}
+
+table{
+	border-collapse: collapse;
+	
+}
+table,td,th{
+	border:1px solid white;
+}
+th{
+	background-color: #B40404;
+	color:white;
+}
+
+#tab{
+	margin-top: 40px;
+	margin-left: 100px;
+	
+	
+}
+
+#base{
+	padding: 10px;
+	width:500px;
+  border: solid 1px #fff;
+  box-shadow: inset 1px 1px 2px 0 #707070;
+  transition: box-shadow 0.3s;
+  color:#c9c9c9;
+	
+}
+#base:hover{
+	  box-shadow: inset 1px 1px 2px 0 #c9c9c9;
+	  color:#707070;
+}
+#tabla{
+	padding: 10px;
+	width:500px;
+  border: solid 1px #fff;
+  box-shadow: inset 1px 1px 2px 0 #707070;
+  transition: box-shadow 0.3s;
+	color:#c9c9c9;
+}
+#tabla:hover{
+	box-shadow: inset 1px 1px 2px 0 #c9c9c9;
+	color:#707070;
+}
+#campo{
+	padding: 10px;
+	width:300px;
+  border: solid 1px #fff;
+  box-shadow: inset 1px 1px 2px 0 #707070;
+  transition: box-shadow 0.3s;
+	color:#c9c9c9;
+	margin-top: 2px;
+	
+}
+#campo:hover{
+	box-shadow: inset 1px 1px 2px 0 #c9c9c9;
+	color:#707070;
+}
+#seleccion{
+padding: 10px;
+	width:300px;
+  border: solid 1px #fff;
+  box-shadow: inset 1px 1px 2px 0  #0B1230;
+  transition: box-shadow 0.3s;
+	color:black;
+		margin-left: 4px;
+}
+#seleccion:hover{
+	box-shadow: inset 1px 1px 2px 0 #c9c9c9;
+	color:#707070;
+}
