@@ -1,0 +1,204 @@
+<?php
+$tipo = $_POST['tipo'];
+$nombre1=$_POST['nombre'];
+$base=$_POST['base'];
+$tabla1=$_POST['tabla'];
+$result;
+$result1;
+
+$consulta1;
+
+$tipo1=$_POST['tipo2'];
+$nombre2=$_POST['nombre1'];
+// validacion from- celda 1----------------------------------------
+$consultas;
+if($tipo=="nombre_m" or $tipo=="nombre_h" or $tipo=="apellido" or $tipo=="edad" or $tipo=="telefono"
+or $tipo=="fax" or $tipo=="correo" or $tipo=="empresa"){
+	$consultas="humanos";
+}elseif($tipo=="direccion" or $tipo=="municipio" or $tipo=="cp" or $tipo=="calle"){
+	$consultas="geografico";
+}elseif($tipo=="palabra" or $tipo=="alfanumerico"){
+	$consultas="aleatorio";
+}else{
+	$consultas="otros";
+}
+// validacion from celda 1-----------------------------------------
+
+// validacion from- celda 2----------------------------------------
+
+if($tipo1=="nombre_m" or $tipo1=="nombre_h" or $tipo1=="apellido" or $tipo1=="edad" or $tipo1=="telefono"
+or $tipo1=="fax" or $tipo1=="correo" or $tipo1=="empresa"){
+	$consulta1="humanos";
+}elseif($tipo1=="direccion" or $tipo1=="municipio" or $tipo1=="cp" or $tipo1=="calle"){
+	$consulta1="geografico";
+}elseif($tipo1=="palabra" or $tipo1=="alfanumerico"){
+	$consulta1="aleatorio";
+}else{
+	$consulta1="otros";
+}
+// validacion from celda 2-----------------------------------------
+
+
+
+
+
+
+// **Consulta obtener datos de campos----------------------------
+include ('conexion.php');
+
+		 $con = mysql_connect($host, $user, $pw) or die(" problemas al conectar");
+		mysql_select_db($db, $con) or die("problemas al conectar con la base de datos");
+		// //
+		// // //consulta datos
+		// $sql = mysql_query("SELECT {$tipo} FROM {$consulta} ", $con);
+		 	 // $sql1 = mysql_query("SELECT {$tipo1} FROM {$consulta1} ", $con);
+		 
+// **Consulta obtener datos de campos----------------------------
+
+ // ------imprime datos obtenidos(prueba)---------------------------
+            //while($row = mysql_fetch_array($sql)){
+			//$result=$row[$tipo];
+	 // echo "".$result.",";	
+// 
+ //}
+// 
+     // while($row = mysql_fetch_array($sql1)){
+			// $result1=$row[$tipo1];
+	 // echo "".$result1.",";	
+// 
+// }
+//---- imprime datos obtenidos(prueba)---------------------------
+	
+	
+	// CREACION ARCHIVO SQL----------------------------------//
+	
+	$nombre ="".$base.".sql";
+$drop = false;
+$tablas = false;
+$compresion = false;
+
+ if (empty($tablas)) {
+	 // $consulta = "SHOW TABLES FROM {$db};";
+	 // $respuesta = mysql_query($consulta, $con) or die("No se pudo ejecutar la consulta: " . mysql_error());
+	 // while ($fila = mysql_fetch_array($respuesta, MYSQL_NUM)) {
+	 // $tablas[] = $tabla1;
+	 // }
+	 $tablas[]= $tabla1;
+ }
+
+ 
+
+/* Se crea la cabecera del archivo */
+$info['dumpversion'] = "1.1b";
+$info['fecha'] = date("d-m-Y");
+$info['hora'] = date("h:m:s A");
+$info['mysqlver'] = mysql_get_server_info();
+$info['phpver'] = phpversion();
+ob_start();
+print_r($tablas);
+$representacion = ob_get_contents();
+ob_end_clean();
+preg_match_all('/(\[\d+\] => .*)\n/', $representacion, $matches);
+$info['tablas'] = implode(";  ", $matches[1]);
+$dump = <<<EOT
+# +===================================================================
+# |
+# | Generado el {$info['fecha']} a las {$info['hora']} 
+# | Servidor: {$_SERVER['HTTP_HOST']}
+# | MySQL Version: {$info['mysqlver']}
+# | PHP Version: {$info['phpver']}
+# | Base de datos: '$base'
+# | Tablas: {$info['tablas']}
+# |
+# +-------------------------------------------------------------------
+ 
+EOT;
+foreach ($tablas as $tabla) {
+
+	$drop_table_query = "";
+	$create_table_query = "";
+	$insert_into_query = "";
+
+	/* Se halla el query que será capaz vaciar la tabla. */
+	if ($drop) {
+		$drop_table_query = "DROP TABLE IF EXISTS `$tabla`;";
+	} else {
+		$drop_table_query = "# No especificado.";
+	}
+
+	/* Se halla el query que será capaz de recrear la estructura de la tabla.  PONER AQUI TEXTO DE CREAR TABLA LLAMANDO LA VALIABLE*/
+	$create_table_query = "";
+	$tipodato = "SELECT $tipo FROM $consultas";
+	$r = mysql_query($tipodato, $con) or die("No se pudo ejecutar la consulta $consultas    74:  " . mysql_error());
+	$dato1=mysql_field_type($r, 0);
+	$extension=mysql_field_len($r, 0);
+	 $nulo=mysql_field_flags($r, 0);
+	
+	
+$consulta = "CREATE TABLE $tabla1 (".$nombre1."  ".$dato1."(".$extension.") ".$nulo." ";
+	// $respuesta = mysql_query($consulta, $con) or die("No se pudo ejecutar la consulta 67: " . mysql_error());
+	// while ($fila = mysql_fetch_array($respuesta, MYSQL_NUM)) {
+		$create_table_query = $consulta. ";";
+	
+
+	/* Se halla el query que será capaz de insertar los datos. */
+	$insert_into_query = "";
+	$consulta = "SELECT $tipo FROM $consultas";
+	$respuesta = mysql_query($consulta, $con) or die("No se pudo ejecutar la consulta $consultas    74:  " . mysql_error());
+	
+	while ($fila = mysql_fetch_array($respuesta, MYSQL_ASSOC)) {
+		$columnas = array_keys($fila);
+		foreach ($columnas as $columna) {
+			if (gettype($fila[$columna]) == "NULL") {
+				$values[] = "NULL";
+			} else {
+				$values[] = "'" . mysql_real_escape_string($fila[$columna]) . "'";
+			}
+		}
+		$insert_into_query .= "INSERT INTO '$tabla' VALUES (" . implode(", ", $values) . ");\n";
+		unset($values);
+	}
+
+	$dump .= <<<EOT
+ 
+# | Vaciado de tabla '$tabla'
+# +------------------------------------->
+$drop_table_query
+ 
+ 
+# | Estructura de la tabla '$tabla'
+# +------------------------------------->
+$create_table_query
+ 
+ 
+# | Carga de datos de la tabla '$tabla'
+# +------------------------------------->
+$insert_into_query
+ 
+EOT;
+}
+
+/* Envio */
+if (!headers_sent()) {
+	header("Pragma: no-cache");
+	header("Expires: 0");
+	header("Content-Transfer-Encoding: binary");
+	switch ($compresion) {
+		case "gz" :
+			header("Content-Disposition: attachment; filename=$nombre.gz");
+			header("Content-type: application/x-gzip");
+			echo gzencode($dump, 9);
+			break;
+		case "bz2" :
+			header("Content-Disposition: attachment; filename=$nombre.bz2");
+			header("Content-type: application/x-bzip2");
+			echo bzcompress($dump, 9);
+			break;
+		default :
+			header("Content-Disposition: attachment; filename=$nombre");
+			header("Content-type: application/force-download");
+			echo $dump;
+	}
+} else {
+	echo "<b>ATENCION: Probablemente ha ocurrido un error</b><br />\n<pre>\n$dump\n</pre>";
+}
