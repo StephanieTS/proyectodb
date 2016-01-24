@@ -1,0 +1,115 @@
+<html>
+	<head>
+		<!-- <link rel="stylesheet" type="text/css" href="css/tabla.css"/>
+		<script type="text/javascript" src="tablecloth/tablecloth.js"></script>
+		-->
+		<link rel="stylesheet" type="text/css" href="css/index.css"/>
+		<meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+	</head>
+	<div id="cabecera"></div>
+	<div id="linea"></div>
+	<body>
+		
+
+		<h1>Generador de base de datos</h1>
+		<h3>Especificaciones</h3>
+		<div id="tab" >
+			<form method="post" action="prueba.php">
+				<input type="text"  placeholder="Nombre de  tu base de datos" id="base" name="base"/>
+				<br />
+				<br />
+				<input type="text"  placeholder="Nombre de la tabla" id="tabla" name="tabla"/>
+				<br/>
+				<br />
+				<table cellspacing="0" cellpadding="0" class="tablap">
+					<tr>
+						
+						<th>Nombre de la columna </th>
+						<th>Tipo de dato</th>
+                       
+					</tr>
+					<tr>
+						
+						<td>
+						<input type="text"  name="nombre" id="campo" placeholder="Nombre de columna"/>
+						</td>
+
+						<td>
+						<select name="tipo" id="seleccion">
+							<option >Elige una opción</option>
+							<option disabled="true">1-. HUMANOS:</option>
+
+							<option  value="nombre_m" >Nombre mujer</option>
+							<option  value="nombre_h" >Nombre hombre</option>
+							<option  value="apellido" >Apellido</option>
+							<option  value="edad" >Edad</option>
+							<option  value="telefono" >Teléfono</option>
+							<option  value="fax" >Fax</option>
+							<option  value="correo" >E-mail</option>
+							<option  value="empresa" >Empresa</option>
+
+							<option  disabled="true">2-. GEOGRÁFICOS:</option>
+							<option  value="direccion" >Dirección</option>
+							<option  value="municipio" >Municipio</option>
+							<option  value="cp" >Código postal</option>
+							<option  value="calle" >Calle</option>
+
+							<option disabled="true">3-. ALEATORIOS:</option>
+							<option  value="palabra" >Palabras</option>
+							<option  value="alfanumerico" >Alfanumerico</option>
+							
+							<option disabled="true">4-. OTROS:</option>
+							<option  value="nom_flor" >Flores</option>
+							<option  value="color" >Colores</option>
+						</select>
+						</td>
+
+					</tr>
+					
+					<tr>
+						<td>
+						<input type="text"  name="nombre1" id="campo" placeholder="Nombre de la columna"/>
+						</td>
+
+						<td>
+						<select name="tipo2" id="seleccion">
+							<option>Elige una opción</option>
+							<option disabled="true">1-. HUMANOS:</option>
+
+							<option  value="nombre_m" >Nombre mujer</option>
+							<option  value="nombre_h" >Nombre hombre</option>
+							<option  value="apellido" >Apellido</option>
+							<option  value="edad" >Edad</option>
+							<option  value="telefono" >Teléfono</option>
+							<option  value="fax" >Fax</option>
+							<option  value="correo" >E-mail</option>
+							<option  value="empresa" >Empresa</option>
+
+							<option disabled="true">2-. GEOGRÁFICOS:</option>
+							<option  value="direccion" >Dirección</option>
+							<option  value="municipio" >Municipio</option>
+							<option  value="cp" >Código postal</option>
+							<option  value="calle" >Calle</option>
+
+							<option disabled="true">3-. ALEATORIOS:</option>
+							<option  value="palabra" >Palabras</option>
+							<option  value="alfanumerico" >Alfanumerico</option>
+							
+							<option disabled="true">4-. OTROS:</option>
+							<option  value="nom_flor" >Flores</option>
+							<option  value="color" >Colores</option>
+						</select>
+						</td>
+
+					</tr>
+
+				</table>
+<br />
+				<input type="submit" value="Generar"  />
+			</form>
+			
+			<!-- //TABLA//////////////////////////////////////////// -->
+
+			<?php ?>
+	</body>
+</html>
