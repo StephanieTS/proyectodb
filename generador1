@@ -1,0 +1,393 @@
+<?php
+$tipo = $_POST['tipo'];
+$nombre1 = $_POST['nombre'];
+$base = $_POST['base'];
+$tabla1 = $_POST['tabla'];
+$result;
+$result1;
+
+$consulta1;
+
+$tipo1 = $_POST['tipo2'];
+$nombre2 = $_POST['nombre1'];
+
+$tipo3=$_POST['tipo3'];
+$nombre3=$_POST['nombre3'];
+
+$tipo4=$_POST['tipo4'];
+$nombre4=$_POST['nombre4'];
+
+$tipo5=$_POST['tipo5'];
+$nombre5=$_POST['nombre5'];
+// validacion from- celda 1----------------------------------------
+$consultas;
+if ($tipo == "nombre_m" or $tipo == "nombre_h" or $tipo == "apellido" or $tipo == "edad" or $tipo == "telefono" or $tipo == "fax" or $tipo == "correo" or $tipo == "empresa") {
+	$consultas = "humanos";
+} elseif ($tipo == "direccion" or $tipo == "municipio" or $tipo == "cp" or $tipo == "calle") {
+	$consultas = "geografico";
+} elseif ($tipo == "palabra" or $tipo == "alfanumerico") {
+	$consultas = "aleatorio";
+} else {
+	$consultas = "otros";
+}
+// validacion from celda 1-----------------------------------------
+
+// validacion from- celda 2----------------------------------------
+
+if ($tipo1 == "nombre_m" or $tipo1 == "nombre_h" or $tipo1 == "apellido" or $tipo1 == "edad" or $tipo1 == "telefono" or $tipo1 == "fax" or $tipo1 == "correo" or $tipo1 == "empresa") {
+	$consulta1 = "humanos";
+} elseif ($tipo1 == "direccion" or $tipo1 == "municipio" or $tipo1 == "cp" or $tipo1 == "calle") {
+	$consulta1 = "geografico";
+} elseif ($tipo1 == "palabra" or $tipo1 == "alfanumerico") {
+	$consulta1 = "aleatorio";
+} else {
+	$consulta1 = "otros";
+}
+// validacion from celda 2-----------------------------------------
+
+
+// validacion from- celda 3----------------------------------------
+
+if ($tipo3 == "nombre_m" or $tipo3 == "nombre_h" or $tipo3 == "apellido" or $tipo3== "edad" or $tipo3== "telefono" or $tipo3 == "fax" or $tipo3 == "correo" or $tipo3 == "empresa") {
+	$consulta3 = "humanos";
+} elseif ($tipo3 == "direccion" or $tipo3== "municipio" or $tipo3 == "cp" or $tipo3 == "calle") {
+	$consulta3 = "geografico";
+} elseif ($tipo3 == "palabra" or $tipo3 == "alfanumerico") {
+	$consulta3 = "aleatorio";
+} else {
+	$consulta3 = "otros";
+}
+// validacion from celda 3-----------------------------------------
+
+// validacion from- celda 4----------------------------------------
+
+if ($tipo4 == "nombre_m" or $tipo4 == "nombre_h" or $tipo4 == "apellido" or $tipo4== "edad" or $tipo4== "telefono" or $tipo4 == "fax" or $tipo4 == "correo" or $tipo4 == "empresa") {
+	$consulta4 = "humanos";
+} elseif ($tipo4 == "direccion" or $tipo4== "municipio" or $tipo4 == "cp" or $tipo4 == "calle") {
+	$consulta4 = "geografico";
+} elseif ($tipo4 == "palabra" or $tipo4 == "alfanumerico") {
+	$consulta4 = "aleatorio";
+} else {
+	$consulta4 = "otros";
+}
+// validacion from celda 4-----------------------------------------
+// validacion from- celda 5----------------------------------------
+
+if ($tipo5 == "nombre_m" or $tipo5 == "nombre_h" or $tipo5 == "apellido" or $tipo5== "edad" or $tipo5== "telefono" or $tipo5 == "fax" or $tipo5 == "correo" or $tipo5 == "empresa") {
+	$consulta5 = "humanos";
+} elseif ($tipo5 == "direccion" or $tipo5== "municipio" or $tipo5 == "cp" or $tipo5 == "calle") {
+	$consulta5 = "geografico";
+} elseif ($tipo5 == "palabra" or $tipo5 == "alfanumerico") {
+	$consulta5 = "aleatorio";
+} else {
+	$consulta5= "otros";
+}
+// validacion from celda 5-----------------------------------------
+
+
+
+
+
+
+// **Consulta obtener datos de campos----------------------------
+include ('conexion.php');
+
+$con = mysql_connect($host, $user, $pw) or die(" problemas al conectar");
+mysql_select_db($db, $con) or die("problemas al conectar con la base de datos");
+// //
+// // //consulta datos
+// $sql = mysql_query("SELECT {$tipo} FROM {$consulta} ", $con);
+$sql1 = mysql_query("SELECT {$tipo1} FROM {$consulta1} ", $con);
+
+// **Consulta obtener datos de campos----------------------------
+
+
+
+// CREACION ARCHIVO SQL----------------------------------//
+
+$nombre = "" . $base . ".sql";
+$drop = false;
+$tablas = false;
+$compresion = false;
+
+if (empty($tablas)) {
+	
+	$tablas[] = $tabla1;
+}
+
+/* Se crea la cabecera del archivo */
+$info['dumpversion'] = "1.1b";
+$info['fecha'] = date("d-m-Y");
+$info['hora'] = date("h:m:s A");
+$info['mysqlver'] = mysql_get_server_info();
+$info['phpver'] = phpversion();
+ob_start();
+print_r($tablas);
+$representacion = ob_get_contents();
+ob_end_clean();
+preg_match_all('/(\[\d+\] => .*)\n/', $representacion, $matches);
+$info['tablas'] = implode(";  ", $matches[1]);
+$dump = <<<EOT
+# +===================================================================
+# |
+# | Generado el {$info['fecha']} a las {$info['hora']} 
+# | Servidor: {$_SERVER['HTTP_HOST']}
+# | MySQL Version: {$info['mysqlver']}
+# | PHP Version: {$info['phpver']}
+# | Base de datos: '$base'
+# | Tablas: {$info['tablas']}
+# |
+# +-------------------------------------------------------------------
+ 
+ 
+ CREATE DATABASE IF NOT EXIST $base;
+EOT;
+foreach ($tablas as $tabla) {
+
+	$drop_table_query = "";
+	$create_table_query = "";
+	$insert_into_query = "";
+
+	/* Se halla el query que será capaz vaciar la tabla. */
+	if ($drop) {
+		$drop_table_query = "DROP TABLE IF EXISTS `$tabla`;";
+	} else {
+		$drop_table_query = "# No especificado.";
+	}
+
+	/* Se halla el query que será capaz de recrear la estructura de la tabla.  PONER AQUI TEXTO DE CREAR TABLA LLAMANDO LA VALIABLE*/
+	$create_table_query = "";
+	$tipodato = "SELECT $tipo FROM $consultas";
+	$r = mysql_query($tipodato, $con) or die("No se pudo ejecutar la consulta $consultas    74:  " . mysql_error());
+	$dato1 = mysql_field_type($r, 0);
+	$extension = mysql_field_len($r, 0);
+	$nulo = mysql_field_flags($r, 0);
+	
+	
+	
+	//dato segunda celda
+	$tipodato1 = "SELECT $tipo1 FROM $consulta1";
+		$r1 = mysql_query($tipodato, $con) or die("No se pudo ejecutar la consulta $consultas    74:  " . mysql_error());
+		$dato2 = mysql_field_type($r1, 0);
+		$extension1 = mysql_field_len($r1, 0);
+		$nulo1 = mysql_field_flags($r1, 0);
+	//dato tercera celda//
+$c3="SELECT $tipo3 FROM $consulta3";
+		$r3=mysql_query($c3, $con) or die("No se pudo ejecutar la consulta  llenar tabla 3:  " . mysql_error());
+		$dato3=mysql_field_type($r3, 0);
+		$extension3= mysql_field_len($r3, 0);
+		$nulo3=mysql_field_flags($r3, 0);
+	//tercera celda//
+	//cuarta celda
+	$c4="SELECT $tipo4 FROM $consulta4";
+		$r4=mysql_query($c4, $con) or die("No se pudo ejecutar la consulta  llenar tabla 4:  " . mysql_error());
+		$dato4=mysql_field_type($r4, 0);
+		$extension4= mysql_field_len($r4, 0);
+		$nulo4=mysql_field_flags($r4, 0);
+	//cuarta celda//
+	//quinta celda
+	$c5="SELECT $tipo5 FROM $consulta5";
+		$r5=mysql_query($c5, $con) or die("No se pudo ejecutar la consulta  llenar tabla 5:  " . mysql_error());
+		$dato5=mysql_field_type($r5, 0);
+		$extension5= mysql_field_len($r5, 0);
+		$nulo5=mysql_field_flags($r5, 0);
+	//quintacelda//
+	
+	
+	if (empty($nombre2)) {
+		$consulta = "CREATE TABLE '$tabla1'('$nombre1'  " . $dato1 . "(" . $extension . ")".$nulo." ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		
+		$create_table_query = $consulta . ";";
+
+	} elseif(empty($nombre3)){
+
+		
+		$consulta = "CREATE TABLE '$tabla1'('$nombre1'  " . $dato1 . "(" . $extension . ") $nulo,'$nombre2' " . $dato2 . "(" . $extension1 . ")".$nulo1." 
+		) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		$create_table_query = $consulta . ";";
+	}elseif(empty($nombre4)){
+		
+		
+		$consulta="CREATE TABLE '$tabla1'('$nombre1'  " . $dato1 . "(" . $extension . ") $nulo,'$nombre2' " . $dato2 . "(" . $extension1 . ") $nulo1,'$nombre3' " . $dato3 . "(" . $extension3 . ") $nulo3 
+		) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		$create_table_query = $consulta . ";";
+	}elseif( empty($nombre5)){
+		$consulta="CREATE TABLE '$tabla1'('$nombre1'  " . $dato1 . "(" . $extension . ") $nulo,'$nombre2' " . $dato2 . "(" . $extension1 . ") $nulo1,'$nombre3' " . $dato3 . "(" . $extension3 . ") $nulo3, 
+		'$nombre4' " . $dato4 . "(" . $extension4 . ") $nulo4 ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		$create_table_query = $consulta . ";";
+	}elseif(!empty($nombre1) and !empty($nombre2) and !empty($nombre3) and !empty($nombre4) and !empty($nombre5)){
+		$consulta="CREATE TABLE '$tabla1'('$nombre1'  " . $dato1 . "(" . $extension . ") $nulo,'$nombre2' " . $dato2 . "(" . $extension1 . ") $nulo1,'$nombre3' " . $dato3 . "(" . $extension3 . ") $nulo3, 
+		'$nombre4' " . $dato4 . "(" . $extension4 . ") $nulo4,'$nombre5' " . $dato5 . "(" . $extension5. ") $nulo5 ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		$create_table_query = $consulta . ";";
+	}
+
+
+
+	/* Insertar datos  HACER IF PARA SEGUNDA CELDA. */
+	
+
+	/* Insertar datos---  PRIMERA COLUMNAA---- CONSULTAS */
+
+	if (!empty($nombre1)) {
+		
+		$insert_into_query = "";
+
+	$consulta = "SELECT $tipo FROM $consultas";
+	$respuesta = mysql_query($consulta, $con) or die("No se pudo ejecutar la consulta celda1    74:  " . mysql_error());
+
+	while ($fila = mysql_fetch_array($respuesta, MYSQL_ASSOC)) {
+		$columnas = array_keys($fila);
+		foreach ($columnas as $columna) {
+			if (gettype($fila[$columna]) == "NULL") {
+				$values[] = "NULL";
+			} else {
+				$values[] = "'" . mysql_real_escape_string($fila[$columna]) . "'";
+			}
+		}
+	}
+	
+		$insert_into_query = "INSERT INTO '$tabla' ('$nombre1') VALUES (" . implode(", ", $values) . ");\n";
+	} else {
+
+		$insert_into_query = "";
+
+	}
+	/* Insertar datos---  SEGUNDA-- COLUMNAA---- CONSULTAS */
+	if(!empty($nombre2)){
+				$insert_into_query1 = "";			
+					$celda2 = "SELECT $tipo1 FROM $consulta1";
+	$rcelda2 = mysql_query($celda2, $con) or die("No se pudo ejecutar la consulta  celda2  74:  " . mysql_error());
+
+	while ($fila2 = mysql_fetch_array($rcelda2, MYSQL_ASSOC)) {
+		$columnas2 = array_keys($fila2);
+		foreach ($columnas2 as $columna2) {
+			if (gettype($fila2[$columna2]) == "NULL") {
+				$values2[] = "NULL";
+			} else {
+				$values2[] = "'" . mysql_real_escape_string($fila2[$columna2]) . "'";
+			}
+		}
+	}
+$insert_into_query1= "INSERT INTO '$tabla' ('$nombre2') VALUES (" . implode(", ", $values2) . ");\n";
+	unset($values2);		
+		}else{
+		$insert_into_query1 = "";
+	}
+	
+	if(!empty($nombre3)){
+					$insert_into_query3 = "";		
+					$celda3= "SELECT $tipo3 FROM $consulta3";
+	$rcelda3 = mysql_query($celda3, $con) or die("No se pudo ejecutar la consulta  celda3 :  " . mysql_error());
+
+	while ($fila3 = mysql_fetch_array($rcelda3, MYSQL_ASSOC)) {
+		$columnas3 = array_keys($fila3);
+		foreach ($columnas3 as $columna3) {
+			if (gettype($fila3[$columna3]) == "NULL") {
+				$values3[] = "NULL";
+			} else {
+				$values3[] = "'" . mysql_real_escape_string($fila3[$columna3]) . "'";
+			}
+		}
+	}
+$insert_into_query3= "INSERT INTO '$tabla' ('$nombre3') VALUES (" . implode(", ", $values3) . ");\n";
+	unset($values3);		
+		}else{
+		$insert_into_query3= "";
+	}
+	
+		if(!empty($nombre4)){
+							$insert_into_query4 = "";
+					$celda4= "SELECT $tipo4 FROM $consulta4";
+	$rcelda4 = mysql_query($celda4, $con) or die("No se pudo ejecutar la consulta  celda4:  " . mysql_error());
+
+	while ($fila4 = mysql_fetch_array($rcelda4, MYSQL_ASSOC)) {
+		$columnas4 = array_keys($fila4);
+		foreach ($columnas4 as $columna4) {
+			if (gettype($fila4[$columna4]) == "NULL") {
+				$values4[] = "NULL";
+			} else {
+				$values4[] = "'" . mysql_real_escape_string($fila4[$columna4]) . "'";
+			}
+		}
+	}
+$insert_into_query4= "INSERT INTO '$tabla' ('$nombre4') VALUES (" . implode(", ", $values4) . ");\n";
+	unset($values4);		
+		}else{
+		$insert_into_query4= "";
+	}
+		
+		
+	if(!empty($nombre5)){
+							$insert_into_query5= "";
+					$celda5= "SELECT $tipo5 FROM $consulta5";
+	$rcelda5 = mysql_query($celda5, $con) or die("No se pudo ejecutar la consulta  celda5:  " . mysql_error());
+
+	while ($fila5 = mysql_fetch_array($rcelda5, MYSQL_ASSOC)) {
+		$columnas5 = array_keys($fila5);
+		foreach ($columnas5 as $columna5) {
+			if (gettype($fila5[$columna5]) == "NULL") {
+				$values5[] = "NULL";
+			} else {
+				$values5[] = "'" . mysql_real_escape_string($fila5[$columna5]) . "'";
+			}
+		}
+	}
+$insert_into_query5= "INSERT INTO '$tabla' ('$nombre5') VALUES (" . implode(", ", $values5) . ");\n";
+	unset($values5);		
+		}else{
+		$insert_into_query5= "";
+	}
+	
+
+	
+
+	
+
+	$dump .= <<<EOT
+ 
+# | Vaciado de tabla '$tabla'
+# +------------------------------------->
+$drop_table_query
+ 
+ 
+# | Estructura de la tabla '$tabla'
+# +------------------------------------->
+$create_table_query
+ 
+ 
+# | Carga de datos de la tabla '$tabla'
+# +------------------------------------->
+$insert_into_query
+$insert_into_query1
+$insert_into_query3
+$insert_into_query4
+$insert_into_query5
+ 
+EOT;
+}
+
+/* Envio */
+if (!headers_sent()) {
+	header("Pragma: no-cache");
+	header("Expires: 0");
+	header("Content-Transfer-Encoding: binary");
+	switch ($compresion) {
+		case "gz" :
+			header("Content-Disposition: attachment; filename=$nombre.gz");
+			header("Content-type: application/x-gzip");
+			echo gzencode($dump, 9);
+			break;
+		case "bz2" :
+			header("Content-Disposition: attachment; filename=$nombre.bz2");
+			header("Content-type: application/x-bzip2");
+			echo bzcompress($dump, 9);
+			break;
+		default :
+			header("Content-Disposition: attachment; filename=$nombre");
+			header("Content-type: application/force-download");
+			echo $dump;
+	}
+} else {
+	echo "<b>ATENCION: Probablemente ha ocurrido un error</b><br />\n<pre>\n$dump\n</pre>";
+}
+?>
